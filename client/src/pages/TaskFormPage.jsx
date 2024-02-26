@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import  { useForm } from "react-hook-form";
 import { createTask, deleteTask, updateTask, getTask } from "../api/tasks.api";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { getAllTasks } from "../api/tasks.api";
 
 function TaskFormPage() {
     
@@ -10,18 +11,19 @@ function TaskFormPage() {
 
   const navigate = useNavigate();
   const params = useParams();
-  // console.log(params)
+
+  const [tasksCount, setTasksCount] = useState(0)
+
 
   const onSubmit = handleSubmit(async data => {
     if (params.id) {
       await updateTask(params.id, data);
-      toast.success('Tarea actualizada');
-      // console.log('Actualizando')
+      toast.success('Tarea actualizada');  
     } else {
       await createTask(data);
       toast.success('Tarea creada');
     }
-    navigate("/tasks");
+    navigate("/");
   });
   
   useEffect(() => {
@@ -35,10 +37,20 @@ function TaskFormPage() {
     loadTask();
   }, []);
 
+
+  useEffect(() => {
+    async function loadTasks() {
+      const res = await getAllTasks();
+      setTasksCount(res.data.length);
+    }
+    loadTasks();
+  }, [])
+
   return (
       <div className="max-w-xl mx-auto">
 
         <form onSubmit={onSubmit}>
+        
           <input
             className="bg-zinc-700 p-3 rounded-lg block w-full mb-3" 
             type="text" 
@@ -54,6 +66,8 @@ function TaskFormPage() {
             {...register("description", { required: true })}
           ></textarea>
           {errors.description && <span>Este campo es requerido</span>}
+
+          <p>Tienes {tasksCount} tareas de 20 disponibles.</p>
 
           <button
             className="bg-indigo-500 p-3 rounded-lg block w-full mt-3">

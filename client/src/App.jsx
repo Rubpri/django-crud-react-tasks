@@ -5,7 +5,9 @@ import TaskFormPage from "./pages/TaskFormPage";
 import Navigation  from "./components/Navigation";
 import { Toaster } from "react-hot-toast";
 
+
 export default function App() {
+
   return (
     <BrowserRouter>
       <div className="container mx-auto">
